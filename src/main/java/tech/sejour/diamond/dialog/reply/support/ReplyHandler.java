@@ -16,22 +16,22 @@ import java.util.stream.Collectors;
  */
 public class ReplyHandler extends GenericEventHandler<TransitionRequest> {
 
-    private Map<Class, List<ReplyMappingMethod>> replyMappingMethods;
+    private Map<Class, List<ReplyHandlerMethod>> replyMappingMethods;
 
     public ReplyHandler(Method[] methods) {
         replyMappingMethods = Arrays.stream(methods)
                 .filter(method -> method.getAnnotation(ReplyMapping.class) != null)
                 .map(ReplyMappingMethod::new)
-                .collect(Collectors.groupingBy(ReplyMappingMethod::getEventType));
+                .collect(Collectors.groupingBy(ReplyHandlerMethod::receivingObjectType));
     }
 
     @Override
-    public TransitionRequest tryCall(Class eventType, Object methodOwner, Object arg) throws InvocationTargetException, IllegalAccessException {
-        List<ReplyMappingMethod> methods = replyMappingMethods.get(eventType);
+    public TransitionRequest tryCall(Object methodOwner, Class argType, Object receivingObject) throws InvocationTargetException, IllegalAccessException {
+        List<ReplyHandlerMethod> methods = replyMappingMethods.get(argType);
 
         if (methods != null) {
-            for (ReplyMappingMethod method : methods) {
-                TransitionRequest request = method.tryCall(methodOwner, arg);
+            for (ReplyHandlerMethod method : methods) {
+                TransitionRequest request = method.tryCall(methodOwner, receivingObject);
                 if (request != null) return request;
             }
         }
