@@ -42,6 +42,8 @@ public class EventGateway {
     }
 
     public void handle(String sender, Event event) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, IOException, InvocationTargetException {
+        // TODO: イベントトップフィルタリングの実装 (example. BeaconEventはディスカッション内で拾わずにどんな場合でもトップ階層で拾いたいとき)
+
         // アクティブなディスカッションを取り出す
         DiscussionEngine discussionEngine = getDiscussion(sender);
 
