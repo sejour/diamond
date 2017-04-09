@@ -16,15 +16,7 @@ public class ExitScene implements TransitionRequest {
 
     final List<Message> messages;
 
-    public ExitScene() {
-        this.messages = null;
-    }
-
-    public ExitScene(String message) {
-        this(Arrays.asList(new TextMessage(message)));
-    }
-
-    public ExitScene(List<Message> messages) {
+    private ExitScene(List<Message> messages) {
         this.messages = messages;
     }
 
@@ -32,4 +24,17 @@ public class ExitScene implements TransitionRequest {
     public TransitionResult execute(SceneLoader sceneLoader, SceneObject currentScene) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         return new TransitionResult(currentScene.exit(), messages);
     }
+
+    public static ExitScene request() {
+        return new ExitScene(null);
+    }
+
+    public static ExitScene requestWithMessage(String message) {
+        return new ExitScene(Arrays.asList(new TextMessage(message)));
+    }
+
+    public static ExitScene requestWithMessages(List<Message> messages) {
+        return new ExitScene(messages);
+    }
+
 }
