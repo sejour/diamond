@@ -28,4 +28,10 @@ public @interface Dialog {
      */
     EventUnhandledTransition eventUnhandledTransition() default EventUnhandledTransition.CONTINUE_DIALOG;
 
+    /**
+     * イベントがハンドルされなかったときにユーザに送信するメッセージ
+     * @return
+     */
+    String eventUnhandledMessage() default "";
+
 }

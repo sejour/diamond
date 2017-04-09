@@ -80,19 +80,17 @@ public class DiscussionEngine {
         // handle reply
         TransitionRequest transitionRequest = scene.getActiveDialog().handleReply(event);
         if (transitionRequest == null) {
-            if (diamondMessageHandlerSupport().handle(event) == null) {
-                switch (scene.getActiveDialog().dialogClass.eventUnhandledTransition) {
-                    case CONTINUE_DIALOG:
-                        transitionRequest = ContinueDialog.request();
-                        break;
-                    case KEEP_DIALOG:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            else {
-                return true;
+            String eventUnhandledMessage = scene.getActiveDialog().dialogClass.eventUnhandledMessage;
+            switch (scene.getActiveDialog().dialogClass.eventUnhandledTransition) {
+                case CONTINUE_DIALOG:
+                    transitionRequest = ContinueDialog.requestWithMessage(eventUnhandledMessage);
+                    break;
+                case KEEP_DIALOG:
+                    transitionRequest = KeepDialog.requestWithMessage(eventUnhandledMessage);
+                    break;
+                default:
+                    transitionRequest = TerminateDiscussion.requestWithMessage(eventUnhandledMessage);
+                    break;
             }
         }
 

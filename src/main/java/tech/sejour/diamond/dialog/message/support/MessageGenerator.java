@@ -1,6 +1,8 @@
 package tech.sejour.diamond.dialog.message.support;
 
 import com.linecorp.bot.model.event.Event;
+import tech.sejour.diamond.dialog.extension.ExtendedDialogMessageEntry;
+import tech.sejour.diamond.dialog.extension.ExtendedDialogSupport;
 import tech.sejour.diamond.dialog.message.annotation.Message;
 import tech.sejour.diamond.error.DiamondRuntimeException;
 
@@ -19,6 +21,10 @@ public class MessageGenerator {
     private List<MessageEntry> messageEntries = new ArrayList<>();
 
     public MessageGenerator(Field[] fields, Method[] methods, Class dialogClass) {
+        this(fields, methods, dialogClass, null);
+    }
+
+    public MessageGenerator(Field[] fields, Method[] methods, Class dialogClass, ExtendedDialogSupport extendedDialogSupport) {
         // @Message on field
         messageEntries.addAll(Arrays.stream(fields)
                 .map(field -> {
@@ -41,8 +47,12 @@ public class MessageGenerator {
                 .collect(Collectors.toList())
         );
 
+        // 拡張ダイアログ用のメッセージを追加
+        if (extendedDialogSupport != null) {
+            messageEntries.add(new ExtendedDialogMessageEntry(extendedDialogSupport));
+        }
         // メッセージが1つも無ければ例外スロー
-        if (messageEntries.isEmpty()) {
+        else if (messageEntries.isEmpty()) {
             throw new DiamondRuntimeException(String.format("Dialog class must contain at least one field or method given @Message (dialogClass=%s)", dialogClass.getName()));
         }
 

@@ -24,12 +24,12 @@ public class EventHandler extends GenericEventHandler<EventMappingMethodResult> 
     }
 
     @Override
-    public EventMappingMethodResult tryCall(Class eventType, Object methodOwner, Object arg) throws InvocationTargetException, IllegalAccessException {
-        List<EventMappingMethod> methods = eventMappingMethods.get(eventType);
+    public EventMappingMethodResult tryCall(Object methodOwner, Class receivingObjectType, Object receivingObject) throws InvocationTargetException, IllegalAccessException {
+        List<EventMappingMethod> methods = eventMappingMethods.get(receivingObjectType);
 
         if (methods != null) {
             for (EventMappingMethod method : methods) {
-                EventMappingMethodResult result = method.tryCall(methodOwner, arg);
+                EventMappingMethodResult result = method.tryCall(methodOwner, receivingObject);
                 if (result != null) return result;
             }
         }

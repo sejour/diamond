@@ -2,44 +2,40 @@ package tech.sejour.diamond.dialog.reply.support;
 
 import tech.sejour.diamond.error.DiamondRuntimeException;
 import tech.sejour.diamond.event.matcher.support.MethodEventMatcherSupport;
-import tech.sejour.diamond.transition.NextDialog;
 import tech.sejour.diamond.transition.TransitionRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Created by Shuka on 2017/03/30.
+ * ユーザからのリプライを受け取って処理する @ReplyMapping が付与されたメソッドのエンティティ
  */
-public class ReplyMappingMethod {
+public class ReplyMappingMethod implements ReplyHandlerMethod {
 
-    private final Method method;
+    private final TransitionReturningMethod method;
     private final MethodEventMatcherSupport methodEventMatcherSupport;
 
     public ReplyMappingMethod(Method method) {
-        this.method = method;
+        this.method = new TransitionReturningMethod(method);
 
         if (this.method.getParameterCount() != 1) {
             throw new DiamondRuntimeException("Method for reply mapping must has one parameter.");
         }
 
-        this.methodEventMatcherSupport = new MethodEventMatcherSupport(this.method);
+        this.methodEventMatcherSupport = new MethodEventMatcherSupport(method);
     }
 
-    public TransitionRequest tryCall(Object dialogInstance, Object arg) throws InvocationTargetException, IllegalAccessException {
-        if (methodEventMatcherSupport.matching(arg)) {
-            Object result = method.invoke(dialogInstance, arg);
-            if (result instanceof TransitionRequest) {
-                return (TransitionRequest) result;
-            }
-            // 戻り値がvoidまたは不明な型であればNextDialogとする
-            return NextDialog.request();
+    @Override
+    public TransitionRequest tryCall(Object methodOwner, Object receivingObject) throws InvocationTargetException, IllegalAccessException {
+        if (methodEventMatcherSupport.matching(receivingObject)) {
+            return method.invoke(methodOwner, receivingObject);
         }
 
         return null;
     }
 
-    public Class getEventType() {
+    @Override
+    public Class receivingObjectType() {
         return method.getParameterTypes()[0];
     }
 
