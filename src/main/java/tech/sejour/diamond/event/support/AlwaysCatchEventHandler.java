@@ -1,6 +1,5 @@
 package tech.sejour.diamond.event.support;
 
-import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import tech.sejour.diamond.discussion.DiscussionRequest;
 import tech.sejour.diamond.error.DiamondRuntimeException;
@@ -14,26 +13,27 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * イベントを処理する適切なメソッドをイベントの型をもとに選択し、呼び出し操作を行うクラス
+ * @AlwaysCatchのイベントを処理するクラス
  */
-public class EventHandler extends GenericEventHandler<EventMappingMethodResult> {
+public class AlwaysCatchEventHandler extends GenericEventHandler<EventMappingMethodResult> {
 
-    private final Map<Class, List<EventMappingMethod>> eventMappingMethods;
+    private final Map<Class, List<EventMappingMethod>> alwaysCatchMethods;
 
-    public EventHandler(Method[] methods) {
-        eventMappingMethods = Arrays.stream(methods)
-                .filter(method -> method.getAnnotation(EventMapping.class) != null && method.getAnnotation(AlwaysCatch.class) == null)
+    public AlwaysCatchEventHandler(Method[] methods) {
+        alwaysCatchMethods = Arrays.stream(methods)
+                .filter(method -> method.getAnnotation(EventMapping.class) != null && method.getAnnotation(AlwaysCatch.class) != null)
                 .map(EventMappingMethod::new)
                 .collect(Collectors.groupingBy(EventMappingMethod::getEventType));
     }
 
     @Override
     public EventMappingMethodResult tryCall(Object methodOwner, Class receivingObjectType, Object receivingObject) throws InvocationTargetException, IllegalAccessException {
-        List<EventMappingMethod> methods = eventMappingMethods.get(receivingObjectType);
+        List<EventMappingMethod> methods = alwaysCatchMethods.get(receivingObjectType);
 
         if (methods != null) {
             for (EventMappingMethod method : methods) {
                 EventMappingMethodResult result = method.tryCall(methodOwner, receivingObject);
+                if (result instanceof DiscussionRequest) throw new DiamondRuntimeException("Method that is given @AlwaysCatch can not return DiscussionRequest.");
                 if (result != null) return result;
             }
         }
