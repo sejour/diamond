@@ -14,7 +14,7 @@ targetCompatibility = 1.8
 
 jar {
     baseName = 'diamond'
-    version = '0.3'
+    version = '0.3.1'
 }
 
 repositories {

@@ -1,6 +1,7 @@
 package tech.sejour.diamond.event.support;
 
 import com.linecorp.bot.model.event.Event;
+import com.linecorp.bot.model.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,8 @@ import tech.sejour.diamond.event.annotation.DiamondMessageHandler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -21,6 +24,7 @@ public class DiamondMessageHandlerSupport {
 
     private Object eventGateway;
     private EventHandler eventHandler;
+    private AlwaysCatchEventHandler alwaysCatchEventHandler;
     private final DiamondMessagingService diamondMessagingService;
 
     @Autowired
@@ -33,7 +37,11 @@ public class DiamondMessageHandlerSupport {
         }
 
         eventGateway = beans.stream().findFirst().get();
-        eventHandler = new EventHandler(eventGateway.getClass().getMethods());
+
+        Method[] methods = eventGateway.getClass().getDeclaredMethods();
+        Arrays.stream(methods).forEach(method -> method.setAccessible(true));
+        eventHandler = new EventHandler(methods);
+        alwaysCatchEventHandler = new AlwaysCatchEventHandler(methods);
     }
 
     public DiscussionRequest handle(Event event) throws InvocationTargetException, IllegalAccessException, IOException {
@@ -48,6 +56,17 @@ public class DiamondMessageHandlerSupport {
         }
 
         return null;
+    }
+
+    public boolean handleAlwaysCatch(Event event) throws InvocationTargetException, IllegalAccessException, IOException {
+        EventMappingMethodResult result = alwaysCatchEventHandler.handle(eventGateway, event);
+
+        if (result != null) {
+            diamondMessagingService.sendReplyMessages(result.messages, event);
+            return true;
+        }
+
+        return false;
     }
 
 }
