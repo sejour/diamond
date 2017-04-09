@@ -8,6 +8,19 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Postback(value = "いいえ", data = "no")
+@Postback(order = -1, label = "いいえ", data = "no")
 public @interface No {
+
+    /**
+     * 表示順
+     * @return
+     */
+    int order();
+
+    /**
+     * ボタンを押した際にラベルテキストを送信するかどうか
+     * @return
+     */
+    boolean displayAction() default true;
+
 }

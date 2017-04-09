@@ -8,6 +8,19 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Postback(value = "キャンセル", data = "cancel")
+@Postback(order = -1, label = "キャンセル", data = "cancel")
 public @interface Cancel {
+
+    /**
+     * 表示順
+     * @return
+     */
+    int order();
+
+    /**
+     * ボタンを押した際にラベルテキストを送信するかどうか
+     * @return
+     */
+    boolean displayAction() default true;
+
 }
