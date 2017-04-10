@@ -41,4 +41,8 @@ public class DialogObject {
         return dialogClass.handleReply(instance, event);
     }
 
+    public String getDialogName() {
+        return dialogClass.dialogClass.getName();
+    }
+
 }
