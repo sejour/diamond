@@ -47,7 +47,7 @@ class PostbackEntity {
 
         // PostbackHandlerMethods
         TransitionReturningMethod transitionReturningMethod = new TransitionReturningMethod(method);
-        this.handlerMethods = Arrays.asList(new PostbackHandlerMethod(transitionReturningMethod, data), new TemplateTextHandlerMethod(transitionReturningMethod, targetTexts));
+        this.handlerMethods = Arrays.asList(new PostbackHandlerMethod(transitionReturningMethod, data, actionText), new TemplateTextHandlerMethod(transitionReturningMethod, targetTexts));
     }
 
 }
