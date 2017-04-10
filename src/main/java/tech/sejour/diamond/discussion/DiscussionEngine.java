@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import tech.sejour.diamond.event.extension.EventOneSkipRequest;
 import tech.sejour.diamond.scene.SceneObject;
 import tech.sejour.diamond.service.DiamondMessagingService;
 import tech.sejour.diamond.scene.SceneLoader;
@@ -28,6 +29,8 @@ public class DiscussionEngine {
     final String sender;
 
     private SceneObject scene;
+
+    private EventOneSkipRequest eventOneSkipRequest;
 
     @Autowired
     private SceneLoader sceneLoader;
@@ -77,21 +80,31 @@ public class DiscussionEngine {
             throw new DiamondRuntimeException("DiscussionEngine is not opened.");
         }
 
+        // skip event
+        if (eventOneSkipRequest != null && eventOneSkipRequest.skip(event)) {
+            eventOneSkipRequest = null;
+            return true;
+        }
+
         // handle reply
         TransitionRequest transitionRequest = scene.getActiveDialog().handleReply(event);
         if (transitionRequest == null) {
             String eventUnhandledMessage = scene.getActiveDialog().dialogClass.eventUnhandledMessage;
             switch (scene.getActiveDialog().dialogClass.eventUnhandledTransition) {
                 case CONTINUE_DIALOG:
-                    transitionRequest = ContinueDialog.requestWithMessage(eventUnhandledMessage);
+                    transitionRequest = eventUnhandledMessage == null ? ContinueDialog.request() : ContinueDialog.requestWithMessage(eventUnhandledMessage);
                     break;
                 case KEEP_DIALOG:
-                    transitionRequest = KeepDialog.requestWithMessage(eventUnhandledMessage);
+                    transitionRequest = eventUnhandledMessage == null ? KeepDialog.request() : KeepDialog.requestWithMessage(eventUnhandledMessage);
                     break;
                 default:
-                    transitionRequest = TerminateDiscussion.requestWithMessage(eventUnhandledMessage);
+                    transitionRequest = eventUnhandledMessage == null ? TerminateDiscussion.request() : TerminateDiscussion.requestWithMessage(eventUnhandledMessage);
                     break;
             }
+        }
+
+        if (transitionRequest instanceof EventOneSkipRequest) {
+            eventOneSkipRequest = (EventOneSkipRequest) transitionRequest;
         }
 
         // do transition
