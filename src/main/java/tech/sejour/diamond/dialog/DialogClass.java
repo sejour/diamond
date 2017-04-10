@@ -40,7 +40,7 @@ public class DialogClass {
         if (annotation == null) throw new DiamondRuntimeException("Dialog class must be given @Dialog annotation.");
         this.id = annotation.value();
         this.eventUnhandledTransition = annotation.eventUnhandledTransition();
-        this.eventUnhandledMessage = annotation.eventUnhandledMessage();
+        this.eventUnhandledMessage = annotation.eventUnhandledMessage().isEmpty() ? null : annotation.eventUnhandledMessage();
 
         // analyze fields
         Field[] fields = dialogClass.getDeclaredFields();

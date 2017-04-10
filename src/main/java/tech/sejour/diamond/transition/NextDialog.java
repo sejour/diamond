@@ -27,6 +27,7 @@ public class NextDialog implements TransitionRequest {
     }
 
     public static NextDialog requestWithMessage(String message, Object... args) {
+        // TODO: messageの内容がnullまたはemptyであればrequest()を呼び出すように修正する
         return new NextDialog(Arrays.asList(new TextMessage(message)), args);
     }
 
