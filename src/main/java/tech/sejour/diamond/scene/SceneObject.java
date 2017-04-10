@@ -112,4 +112,8 @@ public class SceneObject {
         return parent == null ? null : parent.nextDialog();
     }
 
+    public String activeDialogName() {
+        return scene == null ? "<null>" : String.format("scene<%s>-dialog[%s](%d)", sceneClass.sceneClass.getTypeName(), activeDialog.getDialogName(), activeDialog.getDialogId());
+    }
+
 }
