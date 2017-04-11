@@ -6,6 +6,7 @@ import com.linecorp.bot.model.message.TextMessage;
 import tech.sejour.diamond.error.DiamondRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +21,10 @@ public interface MessageEntry {
     List<Message> getContent(Object dialog, Event event) throws IllegalAccessException, InvocationTargetException;
 
     static List<Message> message(Object messageObject) {
-        if (messageObject instanceof  Message) {
+        if (messageObject == null) {
+            return new ArrayList<>();
+        }
+        else if (messageObject instanceof  Message) {
             return Arrays.asList((Message) messageObject);
         }
         else if (messageObject instanceof String) {
