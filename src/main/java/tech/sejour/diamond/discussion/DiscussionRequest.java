@@ -19,23 +19,15 @@ public class DiscussionRequest extends EventMappingMethodResult {
 
     public final Object[] args;
 
-    protected DiscussionRequest(List<Message> messages, Class<? extends Scene> scene, Integer dialogId, Object... args) {
+    public DiscussionRequest(List<Message> messages, Class<? extends Scene> scene, Integer dialogId, Object... args) {
         super(messages);
         this.scene = scene;
         this.args = args;
         this.dialogId = dialogId;
     }
 
-    public static DiscussionRequest request(Class<? extends Scene> scene, Integer dialogId, Object... args) {
-        return new DiscussionRequest(null, scene, dialogId, args);
-    }
-
-    public static DiscussionRequest requestWithMessage(String message, Class<? extends Scene> scene, Integer dialogId, Object... args) {
-        return new DiscussionRequest(Arrays.asList(new TextMessage(message)), scene, dialogId, args);
-    }
-
-    public static DiscussionRequest requestWithMessages(List<Message> messages, Class<? extends Scene> scene, Integer dialogId, Object... args) {
-        return new DiscussionRequest(messages, scene, dialogId, args);
+    public DiscussionRequest(Class<? extends Scene> scene, Integer dialogId,  Object... args) {
+        this(null, scene, dialogId, args);
     }
 
 }
