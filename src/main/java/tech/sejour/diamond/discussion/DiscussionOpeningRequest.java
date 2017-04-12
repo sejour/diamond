@@ -12,20 +12,12 @@ import java.util.List;
  */
 public class DiscussionOpeningRequest extends DiscussionRequest {
 
-    private DiscussionOpeningRequest(List<Message> messages, Class<? extends Scene> scene, Object... args) {
+    public DiscussionOpeningRequest(List<Message> messages, Class<? extends Scene> scene, Object... args) {
         super(messages, scene, null, args);
     }
 
-    public static DiscussionOpeningRequest request(Class<? extends Scene> scene, Object... args) {
-        return new DiscussionOpeningRequest(null, scene, args);
-    }
-
-    public static DiscussionOpeningRequest requestWithMessage(String message, Class<? extends Scene> scene, Object... args) {
-        return new DiscussionOpeningRequest(Arrays.asList(new TextMessage(message)), scene, args);
-    }
-
-    public static DiscussionOpeningRequest requestWithMessages(List<Message> messages, Class<? extends Scene> scene, Object... args) {
-        return new DiscussionOpeningRequest(messages, scene, args);
+    public DiscussionOpeningRequest(Class<? extends Scene> scene, Object... args) {
+        this(null, scene, args);
     }
 
 }
